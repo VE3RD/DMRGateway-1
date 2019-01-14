@@ -301,7 +301,7 @@ void CMMDVMNetwork::clock(unsigned int ms)
 	if (length > 0 && m_rptAddress.s_addr == address.s_addr && m_rptPort == port) {
 		if (::memcmp(m_buffer, "DMRD", 4U) == 0) {
 			if (m_debug)
-				CUtils::dump(1U, "RF Received  - Sent Out to Network", m_buffer, length);
+				CUtils::dump(1U, "Net Received  - Sent Out to RF", m_buffer, length);
 			unsigned char len = length;
 			m_rxData.addData(&len, 1U);
 			m_rxData.addData(m_buffer, len);
