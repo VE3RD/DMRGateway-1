@@ -59,7 +59,7 @@ static bool m_killed = false;
 static int  m_signal = 0;
 unsigned int selected_network = 4;
 unsigned int sigcnt =0;
-
+static bool ctrlCode =0;
 
 #if !defined(_WIN32) && !defined(_WIN64)
 static void sigHandler(int signum)
@@ -529,10 +529,12 @@ int CDMRGateway::run()
 			FLCO flco = data.getFLCO();
 
 			if(dstId >= 90000 && dstId <= 90005){
+				ctrlCode=1;
 				LogDebug("TESTAA Network keyed: %d", dstId);
 				selected_network = dstId-90000;
 			} else{
   				LogDebug("TESTAA TG: %d keyed", dstId);
+				ctrlCode = 0;
 			}
 
 			if (flco == FLCO_GROUP && slotNo == m_xlxSlot && dstId == m_xlxTG) {
@@ -610,7 +612,7 @@ int CDMRGateway::run()
 
 				bool rewritten = false;
 
-				if (m_dmrNetwork1 != NULL) {
+				if (m_dmrNetwork1 != NULL && ctrlCode == 0) {
 					// Rewrite the slot and/or TG or neither
 					for (std::vector<CRewrite*>::iterator it = m_dmr1RFRewrites.begin(); it != m_dmr1RFRewrites.end(); ++it) {
 						bool ret = (*it)->process(data, trace);
@@ -636,7 +638,7 @@ int CDMRGateway::run()
 				}
 
 				if (!rewritten) {
-					if (m_dmrNetwork2 != NULL) {
+					if (m_dmrNetwork2 != NULL && ctrlCode == 0) {
 						// Rewrite the slot and/or TG or neither
 						for (std::vector<CRewrite*>::iterator it = m_dmr2RFRewrites.begin(); it != m_dmr2RFRewrites.end(); ++it) {
 							bool ret = (*it)->process(data, trace);
@@ -662,7 +664,7 @@ int CDMRGateway::run()
 				}
 				
 				if (!rewritten) {
-						if (m_dmrNetwork3 != NULL) {
+						if (m_dmrNetwork3 != NULL && ctrlCode == 0) {
 							// Rewrite the slot and/or TG or neither
 							for (std::vector<CRewrite*>::iterator it = m_dmr3RFRewrites.begin(); it != m_dmr3RFRewrites.end(); ++it) {
 								bool ret = (*it)->process(data, trace);
@@ -687,7 +689,7 @@ int CDMRGateway::run()
 					}
 					
 					if (!rewritten) {
-						if (m_dmrNetwork4 != NULL) {
+						if (m_dmrNetwork4 != NULL && ctrlCode == 0) {
 						// Rewrite the slot and/or TG or neither
 							for (std::vector<CRewrite*>::iterator it = m_dmr4RFRewrites.begin(); it != m_dmr4RFRewrites.end(); ++it) {
 								bool ret = (*it)->process(data, trace);
@@ -712,7 +714,7 @@ int CDMRGateway::run()
 						}
 					}
 					if (!rewritten) {
-						if (m_dmrNetwork5 != NULL) {
+						if (m_dmrNetwork5 != NULL && ctrlCode == 0) {
 							// Rewrite the slot and/or TG or neither
 							for (std::vector<CRewrite*>::iterator it = m_dmr5RFRewrites.begin(); it != m_dmr5RFRewrites.end(); ++it) {
 								bool ret = (*it)->process(data, trace);
@@ -740,7 +742,7 @@ int CDMRGateway::run()
 				
 
 				if (!rewritten) {
-					if (m_dmrNetwork1 != NULL) {
+					if (m_dmrNetwork1 != NULL && ctrlCode == 0) {
 						for (std::vector<CRewrite*>::iterator it = m_dmr1Passalls.begin(); it != m_dmr1Passalls.end(); ++it) {
 							bool ret = (*it)->process(data, trace);
 							if (ret) {
@@ -765,7 +767,7 @@ int CDMRGateway::run()
 				}
 
 				if (!rewritten) {
-					if (m_dmrNetwork2 != NULL) {
+					if (m_dmrNetwork2 != NULL && ctrlCode == 0) {
 						for (std::vector<CRewrite*>::iterator it = m_dmr2Passalls.begin(); it != m_dmr2Passalls.end(); ++it) {
 							bool ret = (*it)->process(data, trace);
 							if (ret) {
@@ -790,7 +792,7 @@ int CDMRGateway::run()
 	                        }			
 
 				if (!rewritten) {
-					if (m_dmrNetwork3 != NULL) {
+					if (m_dmrNetwork3 != NULL && ctrlCode == 0) {
 						for (std::vector<CRewrite*>::iterator it = m_dmr3Passalls.begin(); it != m_dmr3Passalls.end(); ++it) {
 							bool ret = (*it)->process(data, trace);
 							if (ret) {
@@ -816,7 +818,7 @@ int CDMRGateway::run()
 				}
 				
 				if (!rewritten) {
-					if (m_dmrNetwork4 != NULL) {
+					if (m_dmrNetwork4 != NULL && ctrlCode == 0) {
 						for (std::vector<CRewrite*>::iterator it = m_dmr4Passalls.begin(); it != m_dmr4Passalls.end(); ++it) {
 							bool ret = (*it)->process(data, trace);
 							if (ret) {
@@ -840,7 +842,7 @@ int CDMRGateway::run()
 					}
 				}
 				if (!rewritten) {
-					if (m_dmrNetwork5 != NULL) {
+					if (m_dmrNetwork5 != NULL && ctrlCode == 0) {
 						for (std::vector<CRewrite*>::iterator it = m_dmr5Passalls.begin(); it != m_dmr5Passalls.end(); ++it) {
 							bool ret = (*it)->process(data, trace);
 							if (ret) {
@@ -921,7 +923,6 @@ int CDMRGateway::run()
                                         rewritten = true;
  					LogMessage("Network 1 Trans  TG: %d ", dstId);
                                }
-
 
 				if (rewritten) {
 					// Check that the rewritten slot is free to use.
