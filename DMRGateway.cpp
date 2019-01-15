@@ -57,7 +57,7 @@ const unsigned char COLOR_CODE = 3U;
 
 static bool m_killed = false;
 static int  m_signal = 0;
-unsigned int selected_network = 4;
+unsigned int selected_network = 0;
 unsigned int sigcnt =0;
 unsigned int ctrlCode =0;  // Default =0,   // 900001-90005 ctrl code   =1;
 
@@ -302,7 +302,7 @@ int CDMRGateway::run()
 		}
 	}
 #endif
-
+//  (const std::string& filePath, const std::string& fileRoot, unsigned int fileLevel, unsigned int displayLevel)
 	ret = ::LogInitialise(m_conf.getLogFilePath(), m_conf.getLogFileRoot(), m_conf.getLogFileLevel(), m_conf.getLogDisplayLevel());
 	if (!ret) {
 		::fprintf(stderr, "DMRGateway: unable to open the log file\n");
@@ -535,6 +535,7 @@ int CDMRGateway::run()
 			} else{
   				LogDebug("TESTAA TG: %d keyed", dstId);
 				ctrlCode = 0;
+				if (dstId == 31665) selected_network = 4;
 			}
 
 			if (flco == FLCO_GROUP && slotNo == m_xlxSlot && dstId == m_xlxTG) {
@@ -632,7 +633,7 @@ int CDMRGateway::run()
 							status[slotNo] = DMRGWS_DMRNETWORK1;
 							timer[slotNo]->setTimeout(rfTimeout);
 							timer[slotNo]->start();
-							LogMessage("Network 1 Send TG: %d ", dstId);
+							LogMessage("Network 1 Send TG: %d,  SelNet: %d ", dstId,selected_network);
 						}
 					}
 				}
@@ -657,7 +658,7 @@ int CDMRGateway::run()
 								status[slotNo] = DMRGWS_DMRNETWORK2;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-								LogMessage("Network 2 Send TG: %d ", dstId);
+								LogMessage("Network 2 Send TG: %d,  SelNet: %d ", dstId,selected_network);
 							}
 						}
 					}
@@ -682,7 +683,7 @@ int CDMRGateway::run()
 									status[slotNo] = DMRGWS_DMRNETWORK3;
 									timer[slotNo]->setTimeout(rfTimeout);
 									timer[slotNo]->start();
-									LogMessage("Network 3 Send TG: %d ", dstId);
+									LogMessage("Network 3 Send TG: %d,  SelNet: %d ", dstId,selected_network);
 								}
 							}
 						}
@@ -708,7 +709,7 @@ int CDMRGateway::run()
 									status[slotNo] = DMRGWS_DMRNETWORK4;
 									timer[slotNo]->setTimeout(rfTimeout);
 									timer[slotNo]->start();
-									LogMessage("Network 4 Send TG: %d ",dstId);
+									LogMessage("Network 4 Send TG: %d,  SelNet: %d ", dstId,selected_network);
 
 								}
 							}
@@ -734,7 +735,7 @@ int CDMRGateway::run()
 									status[slotNo] = DMRGWS_DMRNETWORK5;
 									timer[slotNo]->setTimeout(rfTimeout);
 									timer[slotNo]->start();
-									LogMessage("Network 5 Send  TG: %d ", dstId);
+									LogMessage("Network 5 Send TG: %d,  SelNet: %d ", dstId,selected_network);
 								}
 							}
 						}
@@ -761,7 +762,7 @@ int CDMRGateway::run()
 								status[slotNo] = DMRGWS_DMRNETWORK1;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-								LogMessage("Network 1 Send Passall  TG: %d ", dstId);
+								LogMessage("Network 1 Send PassAll TG: %d,  SelNet: %d ", dstId,selected_network);
 							}
 						}
 					}
@@ -786,7 +787,7 @@ int CDMRGateway::run()
 								status[slotNo] = DMRGWS_DMRNETWORK2;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-								LogMessage("Network 2 Passall  TG: %d ", dstId);
+								LogMessage("Network 2 Send PassAll TG: %d,  SelNet: %d ", dstId,selected_network);
 							}
 						}
 					}
@@ -812,7 +813,7 @@ int CDMRGateway::run()
 								status[slotNo] = DMRGWS_DMRNETWORK3;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-								LogMessage("Network 3 Passall  TG: %d ", dstId);
+								LogMessage("Network 3 Send PassAll TG: %d,  SelNet: %d ", dstId,selected_network);
 							}
 						}
 					}
@@ -837,7 +838,7 @@ int CDMRGateway::run()
 								status[slotNo] = DMRGWS_DMRNETWORK4;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-								LogMessage("Network 4 Send Passall  TG: %d ", dstId);
+								LogMessage("Network 4 Send PassAll TG: %d,  SelNet: %d ", dstId,selected_network);
 							}
 						}
 					}
@@ -861,7 +862,7 @@ int CDMRGateway::run()
 								status[slotNo] = DMRGWS_DMRNETWORK5;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-								LogMessage("Network 5 Passall  TG: %d ", dstId);
+								LogMessage("Network 5 Send PassAll TG: %d,  SelNet: %d ", dstId,selected_network);
 							}
 						}
 					}
@@ -895,7 +896,7 @@ int CDMRGateway::run()
 
 		if (m_dmrNetwork1 != NULL) {
 			ret = m_dmrNetwork1->read(data);
-			if (ret) {
+			if (ret && (selected_network==1 || selected_network==0 )) {
 				unsigned int slotNo = data.getSlotNo();
 				unsigned int srcId  = data.getSrcId();
 				unsigned int dstId  = data.getDstId();
@@ -915,7 +916,7 @@ int CDMRGateway::run()
 				bool rewritten = false;
 				for (std::vector<CRewrite*>::iterator it = m_dmr1NetRewrites.begin(); it != m_dmr1NetRewrites.end(); ++it) {
 					bool ret = (*it)->process(data, trace);
-					if (ret) {
+					if (ret && (selected_network==1 || selected_network==0 )) {
 						rewritten = true;
 						break;
 					}
@@ -932,7 +933,7 @@ int CDMRGateway::run()
 						status[slotNo] = DMRGWS_DMRNETWORK1;
 						timer[slotNo]->setTimeout(netTimeout);
 						timer[slotNo]->start();
-	 					LogMessage("Network 1 RX  TG: %d ", dstId);
+	 					LogMessage("Network 1 RX,  TG: %d,  Slot: %d,  SelNet: %d", dstId,slotNo,selected_network);
 					}
 				}
 
@@ -947,7 +948,7 @@ int CDMRGateway::run()
 
 		if (m_dmrNetwork2 != NULL) {
 			ret = m_dmrNetwork2->read(data);
-			if (ret) {
+			if (ret && (selected_network==2 || selected_network==0 )) {
 				unsigned int slotNo = data.getSlotNo();
 				unsigned int srcId  = data.getSrcId();
 				unsigned int dstId  = data.getDstId();
@@ -967,7 +968,7 @@ int CDMRGateway::run()
 				bool rewritten = false;
 				for (std::vector<CRewrite*>::iterator it = m_dmr2NetRewrites.begin(); it != m_dmr2NetRewrites.end(); ++it) {
 					bool ret = (*it)->process(data, trace);
-					if (ret) {
+					if (ret && (selected_network==2 || selected_network==0 )) {
 						rewritten = true;
 						break;
 					}
@@ -986,7 +987,7 @@ int CDMRGateway::run()
 						status[slotNo] = DMRGWS_DMRNETWORK2;
 						timer[slotNo]->setTimeout(netTimeout);
 						timer[slotNo]->start();
-	 	 				LogMessage("Network 2 Send  TG: %d ", dstId);
+		 				LogMessage("Network 2 RX,  TG: %d,  Slot: %d,  SelNet: %d", dstId,slotNo,selected_network);
 					}
 				}
 
@@ -1001,7 +1002,7 @@ int CDMRGateway::run()
 
 		if (m_dmrNetwork3 != NULL) {
 			ret = m_dmrNetwork3->read(data);
-			if (ret) {
+			if (ret && (selected_network==3 || selected_network==0 )) {
 				unsigned int slotNo = data.getSlotNo();
 				unsigned int srcId = data.getSrcId();
 				unsigned int dstId = data.getDstId();
@@ -1021,7 +1022,7 @@ int CDMRGateway::run()
 				bool rewritten = false;
 				for (std::vector<CRewrite*>::iterator it = m_dmr3NetRewrites.begin(); it != m_dmr3NetRewrites.end(); ++it) {
 					bool ret = (*it)->process(data, trace);
-					if (ret) {
+					if (ret && (selected_network==3 || selected_network==0 )) {
 						rewritten = true;
 						break;
 					}
@@ -1040,7 +1041,7 @@ int CDMRGateway::run()
 						status[slotNo] = DMRGWS_DMRNETWORK3;
 						timer[slotNo]->setTimeout(netTimeout);
 						timer[slotNo]->start();
-  						LogMessage("Network 3 Send  TG: %d, Slot: %d  ", dstId,slotNo);
+		 				LogMessage("Network 3 RX,  TG: %d,  Slot: %d,  SelNet: %d", dstId,slotNo,selected_network);
 					}
 				}
 
@@ -1055,7 +1056,7 @@ int CDMRGateway::run()
 
 		if (m_dmrNetwork4 != NULL) {
 			ret = m_dmrNetwork4->read(data);
-			if (ret) {
+			if (ret && (selected_network==4 || selected_network==0 )) {
 				unsigned int slotNo = data.getSlotNo();
 				unsigned int srcId  = data.getSrcId();
 				unsigned int dstId  = data.getDstId();
@@ -1075,7 +1076,7 @@ int CDMRGateway::run()
 				bool rewritten = false;
 				for (std::vector<CRewrite*>::iterator it = m_dmr4NetRewrites.begin(); it != m_dmr4NetRewrites.end(); ++it) {
 					bool ret = (*it)->process(data, trace);
-					if (ret) {
+					if (ret && (selected_network==4 || selected_network==0 )) {
 						rewritten = true;
 						break;
 					}
@@ -1094,7 +1095,7 @@ int CDMRGateway::run()
 						status[slotNo] = DMRGWS_DMRNETWORK4;
 						timer[slotNo]->setTimeout(netTimeout);
 						timer[slotNo]->start();
-	   					LogMessage("Network 4 Send  TG: %d,  Slot: %d ", dstId,slotNo);
+		 				LogMessage("Network 4 RX,  TG: %d,  Slot: %d,  SelNet: %d", dstId,slotNo,selected_network);
 					}
 				}
 
@@ -1108,7 +1109,7 @@ int CDMRGateway::run()
 		}
 		if (m_dmrNetwork5 != NULL) {
 			ret = m_dmrNetwork5->read(data);
-			if (ret) {
+			if (ret && (selected_network==5 || selected_network==0 )) {
 				unsigned int slotNo = data.getSlotNo();
 				unsigned int srcId  = data.getSrcId();
 				unsigned int dstId  = data.getDstId();
@@ -1128,8 +1129,8 @@ int CDMRGateway::run()
 				bool rewritten = false;
 				for (std::vector<CRewrite*>::iterator it = m_dmr5NetRewrites.begin(); it != m_dmr5NetRewrites.end(); ++it) {
 					bool ret = (*it)->process(data, trace);
-					if (ret) {
-				//		rewritten = true;
+					if (ret  && (selected_network==5 || selected_network==0 )) {
+						rewritten = true;
 						break;
 					}
 				}
@@ -1137,7 +1138,6 @@ int CDMRGateway::run()
                                 if(!rewritten && selected_network==5){
 	                               rewritten = true;
                                 }
-
 
 				if (rewritten) {
 					// Check that the rewritten slot is free to use.
@@ -1147,7 +1147,7 @@ int CDMRGateway::run()
 						status[slotNo] = DMRGWS_DMRNETWORK5;
 						timer[slotNo]->setTimeout(netTimeout);
 						timer[slotNo]->start();
-				       		LogMessage("Network 5 Send TG: %d,  Slot: %d ", dstId,slotNo);
+		 				LogMessage("Network 5 RX,  TG: %d,  Slot: %d,  SelNet: %d", dstId,slotNo,selected_network);
 					}
 				}
 
