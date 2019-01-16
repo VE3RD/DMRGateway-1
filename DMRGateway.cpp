@@ -546,7 +546,8 @@ int CDMRGateway::run()
 			} else{
   				LogDebug("TESTAA TG: %d keyed", dstId);
 				ctrlCode = 0;
-				if (dstId == 31665) selected_network = 4;
+				if (dstId == 31665 && selected_network != 0) selected_network = 4;
+				if (dstId == 310 && selected_network != 0) selected_network = 1;
 			}
 
            		net1ok=false;
