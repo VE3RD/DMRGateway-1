@@ -61,6 +61,7 @@ unsigned int selected_network = 0;
 unsigned int sigcnt =0;
 unsigned int ctrlCode =0;  // Default =0,   // 900001-90005 ctrl code   =1;
 
+static bool net0ok =false;
 static bool net1ok =false;
 static bool net2ok =false;
 static bool net3ok =false;
@@ -363,6 +364,20 @@ int CDMRGateway::run()
 	bool ruleTrace = m_conf.getRuleTrace();
 	LogInfo("Rule trace: %s", ruleTrace ? "yes" : "no");
 
+        int StartNet = m_conf.getStartNet();
+        selected_network = StartNet;
+	LogInfo("Network %d Selectd for StartUp",selected_network);
+ 	switch(StartNet) {
+	case 0 : net0ok = true;
+	case 1 : net1ok = true;
+	case 2 : net2ok = true;
+	case 3 : net3ok = true;
+	case 4 : net4ok = true;
+	case 5 : net5ok = true;
+	}
+
+
+
 	if (m_conf.getDMRNetwork1Enabled()) {
 		ret = createDMRNetwork1();
 		if (!ret)
@@ -551,6 +566,7 @@ int CDMRGateway::run()
 			}
 
            		net1ok=false;
+           		net1ok=false;
            		net2ok=false;
            		net3ok=false;
            		net4ok=false;
@@ -561,7 +577,7 @@ int CDMRGateway::run()
 			if (m_dmrNetwork3 != NULL && ctrlCode == 0 && (selected_network==3 || selected_network==0)) net3ok=true;
 			if (m_dmrNetwork4 != NULL && ctrlCode == 0 && (selected_network==4 || selected_network==0)) net4ok=true;
 			if (m_dmrNetwork5 != NULL && ctrlCode == 0 && (selected_network==5 || selected_network==0)) net5ok=true;
-
+			if (selected_network==0) net0ok=true;
 
 			if (flco == FLCO_GROUP && slotNo == m_xlxSlot && dstId == m_xlxTG) {
 				if (m_xlxReflector != m_xlxRoom || m_xlxNumber != m_xlxStartup)
@@ -2213,6 +2229,7 @@ unsigned int CDMRGateway::getConfig(const std::string& name, unsigned char* buff
 	int height = m_conf.getInfoHeight();
 	if (height > 999)
 		height = 999;
+
 
 	unsigned int rxFrequency = m_conf.getInfoRXFrequency();
 	unsigned int txFrequency = m_conf.getInfoTXFrequency();
