@@ -343,6 +343,9 @@ int CDMRGateway::run()
 
 	LogMessage("Waiting for MMDVM to connect.....");
 
+
+
+
 	while (!m_killed) {
 		m_configLen = m_repeater->getConfig(m_config);
 		if (m_configLen > 0U && m_repeater->getId() > 1000U)
@@ -451,6 +454,10 @@ int CDMRGateway::run()
                         voice = NULL;
                 }
         }
+  	if (voice != NULL) {
+              unsigned int nw = 90000 + selected_network;
+              voice->linkedToDMR(nw,2);
+         }
 
 
 	CTimer* timer[3U];
