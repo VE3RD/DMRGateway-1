@@ -157,6 +157,38 @@ void CVoice::linkedTo(unsigned int number, unsigned int room)
 
 	createVoice(words);
 }
+void CVoice::linkedToDMR(unsigned int number, unsigned int dstId)
+{
+	char letters[10U];
+	::sprintf(letters, "%04u", number);
+
+	std::vector<std::string> words;
+	if (m_positions.count("linkedto") == 0U) {
+		words.push_back("linked");
+		words.push_back("2");
+	} else {
+		words.push_back("network");
+	}
+	words.push_back("D");
+	words.push_back("M");
+	words.push_back("R");
+//	words.push_back("network");
+	words.push_back(std::string(1U, letters[0U]));
+	words.push_back(std::string(1U, letters[1U]));
+	words.push_back(std::string(1U, letters[2U]));
+	words.push_back(std::string(1U, letters[3U]));
+	words.push_back(std::string(1U, letters[4U]));
+	words.push_back(std::string(1U, letters[5U]));
+
+	// 4001 => 1 => A, 4002 => 2 => B, etc.
+	// dstId %= 100U;
+
+	// words.push_back(std::string(1U, 'A' + dstId - 1U));
+//	words.push_back("network");
+//	words.push_back(dstId);
+
+	createVoice(words);
+}
 
 void CVoice::unlinked()
 {

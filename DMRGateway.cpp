@@ -433,6 +433,25 @@ int CDMRGateway::run()
 			voice = NULL;
 		}
 	}
+       if (m_conf.getVoiceEnabled()) {
+                std::string language  = m_conf.getVoiceLanguage();
+                std::string directory = m_conf.getVoiceDirectory();
+
+                LogInfo("Voice Parameters DMR");
+                LogInfo("    Enabled: yes");
+                LogInfo("    Language: %s", language.c_str());
+                LogInfo("    Directory: %s", directory.c_str());
+
+                LogInfo("    Repeater ID: %d", m_repeater->getId());
+
+                voice = new CVoice(directory, language, m_repeater->getId(), 2, m_xlxTG);
+                bool ret = voice->open();
+                if (!ret) {
+                        delete voice;
+                        voice = NULL;
+                }
+        }
+
 
 	CTimer* timer[3U];
 	timer[1U] = new CTimer(1000U);
@@ -558,6 +577,10 @@ int CDMRGateway::run()
 				ctrlCode=1;
 				LogDebug("TESTAA Network keyed: %d", dstId);
 				selected_network = dstId-90000;
+				  if (voice != NULL) {
+                                        voice->linkedToDMR(dstId,slotNo);
+                                }
+
 			} else{
   				LogDebug("TESTAA TG: %d keyed", dstId);
 				ctrlCode = 0;

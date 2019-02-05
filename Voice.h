@@ -48,6 +48,9 @@ public:
 	bool open();
 
 	void linkedTo(unsigned int number, unsigned int room);
+
+	void linkedToDMR(unsigned int number, unsigned int dstId);
+
 	void unlinked();
 
 	bool read(CDMRData& data);
