@@ -49,7 +49,11 @@ public:
 
 	void linkedTo(unsigned int number, unsigned int room);
 
-	void linkedToDMR(unsigned int number, unsigned int dstId);
+	void linkedToNet(unsigned int dstId);
+
+	void talkgroup(unsigned int dstId);
+
+	void dmr(unsigned int dstId);
 
 	void unlinked();
 

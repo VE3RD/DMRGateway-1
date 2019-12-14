@@ -157,15 +157,35 @@ void CVoice::linkedTo(unsigned int number, unsigned int room)
 
 	createVoice(words);
 }
-void CVoice::linkedToDMR(unsigned int number, unsigned int dstId)
+void CVoice::linkedToNet(unsigned int selected_network)
+{
+        char letters[10U];
+//        ::sprintf(letters, "%04u", number);
+        ::sprintf(letters, "%01u",selected_network);
+        std::vector<std::string> words;
+
+        words.push_back("N");
+        words.push_back("E");
+        words.push_back("T");
+        words.push_back(std::string(1U, letters[0U]));
+        words.push_back(std::string(1U, letters[1U]));
+        words.push_back(std::string(1U, letters[2U]));
+//        words.push_back(std::string(1U, letters[3U]));
+//        words.push_back(std::string(1U, letters[4U]));
+//        words.push_back(std::string(1U, letters[5U]));
+
+        createVoice(words);
+}
+void CVoice::talkgroup(unsigned int dstId)
 {
 	char letters[10U];
-	::sprintf(letters, "%04u", number);
+//	::sprintf(letters, "%04u", number);
+	::sprintf(letters, "%03u",dstId);
 
 	std::vector<std::string> words;
-	if (m_positions.count("linkedto") == 0U) {
-		words.push_back("linked");
-		words.push_back("2");
+	if (m_positions.count("talkgroup") == 0U) {
+		words.push_back("dmr");
+		words.push_back("dmr");
 	} else {
 		words.push_back("network");
 	}
@@ -180,15 +200,54 @@ void CVoice::linkedToDMR(unsigned int number, unsigned int dstId)
 	words.push_back(std::string(1U, letters[4U]));
 	words.push_back(std::string(1U, letters[5U]));
 
-	// 4001 => 1 => A, 4002 => 2 => B, etc.
-	// dstId %= 100U;
-
-	// words.push_back(std::string(1U, 'A' + dstId - 1U));
-//	words.push_back("network");
-//	words.push_back(dstId);
-
 	createVoice(words);
 }
+
+void CVoice::dmr(unsigned int dstId)
+{
+	char letters[15U];
+	std::vector<std::string> words;
+
+        if ( dstId > 99999 ) {
+  	::sprintf(letters, "%05u", dstId);
+	} else if  (dstId > 9999) {
+  	::sprintf(letters, "%04u", dstId);
+	} else if  (dstId > 999) {
+  	::sprintf(letters, "%03u", dstId);
+	} else { 
+  	::sprintf(letters, "%02u", dstId);
+	}
+
+//  	::sprintf(letters, "%04u",dstId);
+
+
+	if ( dstId == 31665 ) {
+		words.push_back("T");
+		words.push_back("G");
+		words.push_back("I");
+		words.push_back("F");
+		words.push_back(std::string(3U, letters[0U]));
+	} else
+	{
+		words.push_back("D");
+		words.push_back("M");
+		words.push_back("R");
+		words.push_back("-");
+		words.push_back(std::string(4U, letters[0U]));
+	}
+	words.push_back(std::string(1U, letters[0U]));
+	words.push_back(std::string(1U, letters[1U]));
+	words.push_back(std::string(1U, letters[2U]));
+	words.push_back(std::string(1U, letters[3U]));
+	words.push_back(std::string(1U, letters[4U]));
+
+		
+//		words.push_back(std::string(1U, letters[7U]));
+createVoice(words);
+
+}
+
+
 
 void CVoice::unlinked()
 {

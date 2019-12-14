@@ -69,6 +69,8 @@ static bool net4ok =false;
 static bool net5ok =false;
 
 
+unsigned int memtg =0;
+
 #if !defined(_WIN32) && !defined(_WIN64)
 static void sigHandler(int signum)
 {
@@ -455,8 +457,9 @@ int CDMRGateway::run()
                 }
         }
   	if (voice != NULL) {
-              unsigned int nw = 90000 + selected_network;
-              voice->linkedToDMR(nw,2);
+       //       unsigned int nw = 90000 + selected_network;
+//              voice->linkedToDMR(nw,2);
+              voice->linkedToNet(selected_network);
          }
 
 
@@ -585,14 +588,30 @@ int CDMRGateway::run()
 				LogDebug("TESTAA Network keyed: %d", dstId);
 				selected_network = dstId-90000;
 				  if (voice != NULL) {
-                                        voice->linkedToDMR(dstId,slotNo);
+                                        voice->linkedToNet(selected_network);
+					ctrlCode = 8;
                                 }
 
 			} else{
   				LogDebug("TESTAA TG: %d keyed", dstId);
-				ctrlCode = 0;
-				if (dstId == 31665 && selected_network == 1) selected_network = 4;
-				if (dstId == 310 && selected_network != 0) selected_network = 1;
+		//		ctrlCode = 0;
+				if (dstId == 31665 && selected_network == 0) selected_network = 4;
+			//	if (dstId == 310 && selected_network != 0) selected_network = 1;
+				
+				if(memtg != dstId) {
+					  if (voice != NULL) {
+                                        	voice->dmr(dstId);
+						ctrlCode=8;
+                                	}
+					memtg = dstId;				
+
+				} else
+				{
+					ctrlCode=0;
+				}
+		
+
+
 			}
 
            		net1ok=false;
