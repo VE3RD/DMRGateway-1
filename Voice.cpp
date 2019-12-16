@@ -205,8 +205,15 @@ void CVoice::talkgroup(unsigned int dstId)
 
 void CVoice::dmr(unsigned int dstId)
 {
+unsigned int mult = 0;
+
 	char letters[15U];
 	std::vector<std::string> words;
+
+ 	if (dstId > 999999) {
+          	mult = dstId/1000000;
+		dstId =  dstId - (mult * 1000000); 
+	}
 
         if ( dstId > 99999 ) {
   	::sprintf(letters, "%05u", dstId);
