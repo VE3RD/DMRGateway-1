@@ -200,11 +200,11 @@ void CVoice::linkedToDMR(unsigned int dstId, unsigned int selnet)
 	words.push_back("M");
 	words.push_back("R");
 	words.push_back(std::string(1U, letters[0U]));
-//	words.push_back(std::string(1U, letters[1U]));
-//	words.push_back(std::string(1U, letters[2U]));
-//	words.push_back(std::string(1U, letters[3U]));
-//	words.push_back(std::string(1U, letters[4U]));
-//	words.push_back(std::string(1U, letters[5U]));
+	words.push_back(std::string(1U, letters[1U]));
+	words.push_back(std::string(1U, letters[2U]));
+	words.push_back(std::string(1U, letters[3U]));
+	words.push_back(std::string(1U, letters[4U]));
+	words.push_back(std::string(1U, letters[5U]));
 
 	// 4001 => 1 => A, 4002 => 2 => B, etc.
 //	dstId %= 100U;
