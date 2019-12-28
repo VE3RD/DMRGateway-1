@@ -188,14 +188,17 @@ void CVoice::linkedToNet(unsigned int selnet, unsigned int dstId)
 void CVoice::linkedToDMR(unsigned int dstId, unsigned int selnet)
 {
 	char letters[15U];
-	::sprintf(letters, "%6u", dstId);
+	::sprintf(letters, "%1u", selnet);
 	std::vector<std::string> words;
-//	if (m_positions.count("linkedto") == 0U) {
-		words.push_back("linked");
-		words.push_back("2");
-//	} else {
-//		words.push_back("linkedto");
-//	}
+	words.push_back("linked");
+	words.push_back("2");
+	words.push_back("N");
+	words.push_back("E");
+	words.push_back("T");
+	words.push_back(std::string(1U, letters[0U]));
+	createVoice(words);
+
+	::sprintf(letters, "%6u", dstId);
 	words.push_back("D");
 	words.push_back("M");
 	words.push_back("R");
@@ -205,12 +208,6 @@ void CVoice::linkedToDMR(unsigned int dstId, unsigned int selnet)
 	words.push_back(std::string(1U, letters[3U]));
 	words.push_back(std::string(1U, letters[4U]));
 	words.push_back(std::string(1U, letters[5U]));
-
-	// 4001 => 1 => A, 4002 => 2 => B, etc.
-//	dstId %= 100U;
-
-//	if (dstId >= 1U && dstId <= 26U)
-//		words.push_back(std::string(1U, 'A' + dstId - 1U));
 
 	createVoice(words);
 }
